@@ -1,4 +1,4 @@
-{{- if ne (index .Values.cloudsql.instances 0).instance "instance" }}
+{{- if ne (index .Values.masterReplica.cloudsql.instances 0).instance "instance" }}
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -9,7 +9,7 @@ metadata:
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 spec:
-  replicas: {{ .Values.replicasCount }}
+  replicas: {{ .Values.masterReplica.replicasCount }}
   template:
     metadata:
       labels:
@@ -20,8 +20,8 @@ spec:
       {{- end }}
       containers:
       - name: sqlproxy
-        image: "{{ .Values.image }}:{{ .Values.imageTag }}"
-        imagePullPolicy: {{ default "" .Values.imagePullPolicy | quote }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ default "" .Values.image.pullPolicy | quote }}
         resources:
 {{ toYaml .Values.resources | indent 10 }}
         command:
@@ -31,25 +31,25 @@ spec:
                         {{ .project }}:{{ .region }}:{{ .instance }}=tcp:0.0.0.0:{{ .port }},
                      {{- end }}
         {{ if or .Values.serviceAccountKey .Values.existingSecret -}}
-        - -credential_file=/secrets/cloudsql/{{- if .Values.existingSecret -}} {{ .Values.existingSecretKey }} {{- else -}} credentials.json {{- end }}
+        - -credential_file=/secrets/cloudsql/{{- if .Values.masterReplica.existingSecret -}} {{ .Values.masterReplica.existingSecretKey }} {{- else -}} credentials.json {{- end }}
         {{ end -}}
         ports:
-        {{- range .Values.cloudsql.instances }}
+        {{- range .Values.masterReplica.cloudsql.instances }}
         - name: {{ .instanceShortName | default (.instance | trunc 15) }}
           containerPort: {{ .port }}
         {{- end }}
         volumeMounts:
-        {{ if or .Values.serviceAccountKey .Values.existingSecret -}}
+        {{ if or .Values.masterReplica.serviceAccountKey .Values.masterReplica.existingSecret -}}
         - name: cloudsql-oauth-credentials
           mountPath: /secrets/cloudsql
         {{ end -}}
         - name: cloudsql
           mountPath: /cloudsql
       volumes:
-      {{ if or .Values.serviceAccountKey .Values.existingSecret -}}
+      {{ if or .Values.masterReplica.serviceAccountKey .Values.masterReplica.existingSecret -}}
       - name: cloudsql-oauth-credentials
         secret:
-          secretName: {{ default (include "gcloud-sqlproxy.fullname" .) .Values.existingSecret }}
+          secretName: {{ default (include "gcloud-sqlproxy.fullname" .) .Values.masterReplica.existingSecret }}
       {{ end -}}
       - name: cloudsql
         emptyDir: {}
