@@ -1,0 +1,76 @@
+masterReplica:
+  name: master
+  image:
+    repository: b.gcr.io/cloudsql-docker/gce-proxy
+    tag: "1.11"
+    pullPolicy: IfNotPresent
+  serviceAccountKey: ""
+  existingSecret: ""
+  existingSecretKey: ""
+  cloudsql:
+    instances:
+    - instance: "instance"
+        # Optional abbreviation used to override the truncated instance name if the
+        # 15 character instance name prefix is not unique for use as a port
+        # identifier.
+        instanceShortName: ""
+        # GCP project where the instance exists.
+        project: "project"
+        # GCP region where the instance exists.
+        region: "region"
+        # Port number for the proxy to expose for this instance.
+        port: 3306
+
+
+readReplica:
+  name: read-replica
+  image:
+    repository: b.gcr.io/cloudsql-docker/gce-proxy
+    tag: "1.11"
+    pullPolicy: IfNotPresent
+  serviceAccountKey: ""
+  existingSecret: ""
+  existingSecretKey: ""
+
+  cloudsql:
+    instances:
+    - instance: "instance"
+        # Optional abbreviation used to override the truncated instance name if the
+        # 15 character instance name prefix is not unique for use as a port
+        # identifier.
+        instanceShortName: ""
+        # GCP project where the instance exists.
+        project: "project"
+        # GCP region where the instance exists.
+        region: "region"
+        # Port number for the proxy to expose for this instance.
+        port: 3306
+
+
+
+
+rbac:
+  create: false
+
+## Configure resource requests and limits
+## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+##
+resources:
+  requests:
+    cpu: 100m
+    memory: 100Mi
+  limits:
+    memory: 150Mi
+    cpu: 150m
+
+## Node selector
+nodeSelector: {}
+
+## Tolerations
+tolerations: []
+
+## Affinity
+affinity: {}
+
+podDisruptionBudget: |
+  maxUnavailable: 1
