@@ -62,13 +62,6 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/deployment.yaml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-392" />
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/pdb.yaml">
           <provider selected="true" editor-type-id="text-editor" />
         </entry>
