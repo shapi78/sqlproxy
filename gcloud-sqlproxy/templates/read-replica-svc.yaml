@@ -9,7 +9,7 @@ metadata:
     heritage: "{{ .Release.Service }}"
 spec:
   ports:
-  {{- range .Values.cloudsql.instances }}
+  {{- range .Values.readReplica.cloudsql.instances }}
   - name: {{ .instance }}
     protocol: TCP
     port: {{ .port }}
