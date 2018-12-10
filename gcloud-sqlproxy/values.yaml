@@ -37,7 +37,7 @@ readReplica:
 
 
 image:
-  repository: b.gcr.io/cloudsql-docker/gce-proxy
+  repo: b.gcr.io/cloudsql-docker/gce-proxy
   tag: "1.11"
   pullPolicy: IfNotPresent
 

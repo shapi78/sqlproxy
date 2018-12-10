@@ -16,11 +16,11 @@ spec:
         app: {{ template "gcloud-sqlproxy.fullname" . }}
     spec:
       {{- if .Values.rbac.create }}
-      serviceAccountName: {{ template "gcloud-sqlproxy.fullname" . }}
+      serviceAccountName: {{ template "gcloud-sqlproxy.masterReplica.fullname" . }}
       {{- end }}
       containers:
       - name: sqlproxy
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        image: "{{ .Values.image.repo }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ default "" .Values.image.pullPolicy | quote }}
         resources:
 {{ toYaml .Values.resources | indent 10 }}

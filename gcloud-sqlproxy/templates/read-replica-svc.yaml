@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "gcloud-sqlproxy.fullname" . }}
+  name: {{ template "gcloud-sqlproxy.readReplica.fullname" . }}
   labels:
-    app: {{ template "gcloud-sqlproxy.fullname" . }}
+    app: {{ template "gcloud-sqlproxy.readReplica.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
@@ -16,4 +16,4 @@ spec:
     targetPort: {{ .instanceShortName | default (.instance | trunc 15) }}
   {{- end }}
   selector:
-    app: {{ template "gcloud-sqlproxy.fullname" . }}
+    app: {{ template "gcloud-sqlproxy.readReplica.fullname" . }}
