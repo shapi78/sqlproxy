@@ -1,7 +1,7 @@
 name: gcloud-sqlproxy
 version: 0.6.1
 appVersion: 1.11
-description: DEPRECATED Google Cloud SQL Proxy
+description: Google Cloud SQL Proxy
 keywords:
 - google
 - cloud

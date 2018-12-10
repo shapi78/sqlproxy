@@ -1,3 +1,4 @@
+{{ $port := .Values.port }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -12,7 +13,7 @@ spec:
   {{- range .Values.readReplica.cloudsql.instances }}
   - name: {{ .instance }}
     protocol: TCP
-    port: {{ .port }}
+    port: {{ $port }}
     targetPort: {{ .instanceShortName | default (.instance | trunc 15) }}
   {{- end }}
   selector:

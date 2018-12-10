@@ -14,9 +14,6 @@ masterReplica:
       # GCP project where the instance exists.
       project: "project"
       # GCP region where the instance exists.
-      region: "region"
-      # Port number for the proxy to expose for this instance.
-      port: 3306
 
 
 readReplica:
@@ -31,8 +28,6 @@ readReplica:
     - instance: "instance"
       instanceShortName: ""
       project: "project"
-      region: "region"
-      port: 3306
 
 
 
@@ -40,6 +35,9 @@ image:
   repo: b.gcr.io/cloudsql-docker/gce-proxy
   tag: "1.11"
   pullPolicy: IfNotPresent
+
+port: 3306
+region: "region"
 
 rbac:
   create: false

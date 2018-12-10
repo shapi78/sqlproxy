@@ -1,9 +1,10 @@
+{{ $port := .Values.port }}
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ template "gcloud-sqlproxy.masterReplica.fullname" . }}
   labels:
-    app: {{ template "gcloud-sqlproxy.fullname" . }}
+    app: {{ template "gcloud-sqlproxy.masterReplica.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
@@ -12,7 +13,7 @@ spec:
   {{- range .Values.masterReplica.cloudsql.instances }}
   - name: {{ .instance }}
     protocol: TCP
-    port: {{ .port }}
+    port: {{ $port }}
     targetPort: {{ .instanceShortName | default (.instance | trunc 15) }}
   {{- end }}
   selector:
