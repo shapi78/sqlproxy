@@ -13,10 +13,10 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ template "gcloud-sqlproxy.fullname" . }}
+        app: {{ template "gcloud-sqlproxy.readReplica.fullname" . }}
     spec:
       {{- if .Values.rbac.create }}
-      serviceAccountName: {{ template "gcloud-sqlproxy.fullname" . }}
+      serviceAccountName: {{ template "gcloud-sqlproxy.readReplica.fullname" . }}
       {{- end }}
       containers:
       - name: sqlproxy
