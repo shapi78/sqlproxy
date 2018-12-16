@@ -1,0 +1,20 @@
+{{ $port := .Values.port }}
+{{- $fullname := include "gcloud-sqlproxy.fullname" . }}
+{{- $labels := include "lables_yaml" . }}
+{{- range .Values.instances }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullname }}-{{ .name }}
+  labels:
+    app: {{ $fullname }}-{{ .name }}
+{{ $labels | indent 4 }}
+spec:
+  ports:
+  - name: {{ .instance }}
+    protocol: TCP
+    port: {{ $port }}
+    targetPort: {{ .instanceShortName | default (.instance | trunc 15) }}
+  selector:
+    app: {{ $fullname }}-{{ .name }}
+{{- end }}

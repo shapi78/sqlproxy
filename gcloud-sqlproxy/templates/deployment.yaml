@@ -1,0 +1,48 @@
+{{- $labels := include "lables_yaml" . }}
+{{- $fullname := include "gcloud-sqlproxy.fullname" . }}
+{{- if ne (index .Values.instances 0).instance "instance" }}
+{{ $port := .Values.port }}
+{{ $region := .Values.region }}
+{{ $image := printf "%s:%s" .Values.image.repo .Values.image.tag }}
+{{ $imagePullPolicy := .Values.image.pullPolicy }}
+{{- $imageAttributes := include "container.image" . }}
+{{- $volumeMount := include "container.volumeMounts" . }}
+{{- $containerSpec := include "container.spec" . }}
+{{- $rbacCreate := include "rbacSpec" . }}
+
+{{- range .Values.instances }}
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ $fullname }}-{{ .name }}
+  labels:
+    app: {{ $fullname }}-{{ .name }}
+{{ $labels | indent 4 }}
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: {{ $fullname }}-{{ .name }}
+    spec:
+{{ $rbacCreate | indent 4 }}
+      containers:
+      - name: sqlproxy
+{{ $imageAttributes | indent 8  }}
+        command:
+        - /cloud_sql_proxy
+        - --dir=/cloudsql
+        - -instances={{- range .Values.instances -}}
+                        {{ .project }}:{{ $region }}:{{ .instance }}=tcp:0.0.0.0:{{ $port }},
+                     {{- end }}
+        - -credential_file=/secrets/cloudsql/{{ template "credentials-filename" }}
+        ports:
+        {{- range .Values.instances }}
+        - name: {{ .instanceShortName | default (.instance | trunc 15) }}
+          containerPort: {{ $port }}
+        {{- end }}
+{{ $volumeMount | indent 8 }}
+{{ $containerSpec | indent 6 }}
+{{- end }}
+{{- end }}

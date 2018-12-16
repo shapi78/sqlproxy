@@ -1,43 +1,31 @@
-masterReplica:
-  name: master
 
-  replicasCount: 1
-  serviceAccountKey: ""
-  existingSecret: ""
-  existingSecretKey: ""
-  cloudsql:
-    instances:
-    - instance: "instance"
-      # Optional abbreviation used to override the truncated instance name if the
-      # 15 character instance name prefix is not unique for use as a port
-      instanceShortName: ""
-      # GCP project where the instance exists.
-      project: "project"
-      # GCP region where the instance exists.
+serviceAccountKey: ""
+existingSecret: ""
+existingSecretKey: ""
+port: 3306
+region: "region"
 
-
-readReplica:
-  name: read-replica
-  replicasCount: 1
-  serviceAccountKey: ""
-  existingSecret: ""
-  existingSecretKey: ""
-
-  cloudsql:
-    instances:
-    - instance: "instance"
-      instanceShortName: ""
-      project: "project"
-
-
+instances:
+  - instance: "firstdb"
+    name: master
+    # Optional abbreviation used to override the truncated instance name if the
+    # 15 character instance name prefix is not unique for use as a port
+    instanceShortName: ""
+    # GCP project where the instance exists.
+    project: "our-spanner-217012"
+    # GCP region where the instance exists.
+    replicasCount: 1
+  - instance: "second"
+    name: read-replica
+    instanceShortName: ""
+    project: "our-spanner-217012"
+    replicasCount: 1
 
 image:
   repo: b.gcr.io/cloudsql-docker/gce-proxy
   tag: "1.11"
   pullPolicy: IfNotPresent
 
-port: 3306
-region: "region"
 
 rbac:
   create: false
