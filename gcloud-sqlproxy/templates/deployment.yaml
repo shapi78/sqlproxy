@@ -6,7 +6,7 @@
 {{ $image := printf "%s:%s" .Values.image.repo .Values.image.tag }}
 {{ $imagePullPolicy := .Values.image.pullPolicy }}
 {{- $imageAttributes := include "container.image" . }}
-{{- $volumeMount := include "container.volumeMounts" . }}
+{{- $volumeMount := include "volumeMounts" . }}
 {{- $containerSpec := include "container.spec" . }}
 {{- $rbacCreate := include "rbacSpec" . }}
 
@@ -33,15 +33,11 @@ spec:
         command:
         - /cloud_sql_proxy
         - --dir=/cloudsql
-        - -instances={{- range .Values.instances -}}
-                        {{ .project }}:{{ $region }}:{{ .instance }}=tcp:0.0.0.0:{{ $port }},
-                     {{- end }}
+        - -instances= {{ .project }}:{{ $region }}:{{ .instance }}=tcp:0.0.0.0:{{ $port }}
         - -credential_file=/secrets/cloudsql/{{ template "credentials-filename" }}
         ports:
-        {{- range .Values.instances }}
         - name: {{ .instanceShortName | default (.instance | trunc 15) }}
           containerPort: {{ $port }}
-        {{- end }}
 {{ $volumeMount | indent 8 }}
 {{ $containerSpec | indent 6 }}
 {{- end }}

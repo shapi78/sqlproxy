@@ -50,8 +50,8 @@ Create the filename for credential
 */}}
 {{- define "credentials-filename" -}}
 {{- if .Values.existingSecret -}}
-    {{ .Values.existingSecretKey }}
-{{- else -}} credentials.json
+    {{- printf "%s" .Values.existingSecretKey -}}
+{{- else -}} {{- printf "credentials.json" -}}
 {{- end }}
 {{ end -}}
 
@@ -79,10 +79,10 @@ Create the name of the service account to use
 image: "{{ .Values.image.repo }}:{{ .Values.image.tag }}"
 imagePullPolicy: {{ default "" .Values.image.pullPolicy | quote }}
 resources:
-{{ toYaml .Values.resources | indent 10 }}
+  {{ toYaml .Values.resources }}
 {{- end -}}
 
-{{- define "container.volumeMounts" -}}
+{{- define "volumeMounts" -}}
 volumeMounts:
 {{ if or .Values.serviceAccountKey .Values.existingSecret -}}
 - name: cloudsql-oauth-credentials
@@ -107,12 +107,9 @@ volumes:
       {{ end -}}
 - name: cloudsql
   emptyDir: {}
-nodeSelector:
-{{ toYaml .Values.nodeSelector | indent 8 }}
-      affinity:
-{{ toYaml .Values.affinity | indent 8 }}
-      tolerations:
-{{ toYaml .Values.tolerations | indent 8 }}
+nodeSelector: {{ toYaml .Values.nodeSelector -}}
+affinity: {{ toYaml .Values.affinity -}}
+tolerations: {{ toYaml .Values.tolerations -}}
 {{- end }}
 
 {{- define "lables_yaml" -}}
