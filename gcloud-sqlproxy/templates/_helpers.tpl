@@ -3,7 +3,8 @@
 Expand the name of the chart.
 */}}
 {{- define "gcloud-sqlproxy.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- $name :=default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- printf "%s" .Release.Name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -107,7 +108,6 @@ volumes:
       {{ end -}}
 - name: cloudsql
   emptyDir: {}
-nodeSelector: {{ toYaml .Values.nodeSelector -}}
 affinity: {{ toYaml .Values.affinity -}}
 tolerations: {{ toYaml .Values.tolerations -}}
 {{- end }}

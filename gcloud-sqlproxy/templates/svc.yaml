@@ -1,13 +1,17 @@
 {{ $port := .Values.port }}
-{{- $fullname := include "gcloud-sqlproxy.fullname" . }}
+{{- $chartName := include "gcloud-sqlproxy.name" . }}
 {{- $labels := include "lables_yaml" . }}
 {{- range .Values.instances }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ $fullname }}-{{ .name }}
+  {{- if eq .name "master" }}
+  name: {{ $chartName }}-{{ $chartName }}
+  {{- else }}
+  name: {{ $chartName }}-{{ .name }}-{{ $chartName }}
+  {{- end }}
   labels:
-    app: {{ $fullname }}-{{ .name }}
+    app: {{ $chartName }}-{{ .name }}
 {{ $labels | indent 4 }}
 spec:
   ports:
@@ -16,5 +20,5 @@ spec:
     port: {{ $port }}
     targetPort: {{ .instanceShortName | default (.instance | trunc 15) }}
   selector:
-    app: {{ $fullname }}-{{ .name }}
+    app: {{ $chartName }}-{{ .name }}
 {{- end }}
