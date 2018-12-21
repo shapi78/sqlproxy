@@ -1,5 +1,6 @@
 {{- $labels := include "lables_yaml" . }}
 {{- $chartName := include "gcloud-sqlproxy.name" . }}
+{{- if ne (index .Values.instances 0).instance "instance" }}
 {{ $port := .Values.port }}
 {{ $project := .Values.project }}
 {{ $region := .Values.region }}
@@ -39,9 +40,8 @@ spec:
         command:
         - /cloud_sql_proxy
         - --dir=/cloudsql
-        - -instances={{- with . -}}
-###			{{ $project }}:{{ $region }}:{{ .instance  }}=tcp:0.0.0.0:{{ $port }}
-		     {{- end }}
+{{  $CredFile | indent 8 -}}
+        - -instances={{ $project }}:{{ $region }}:{{ .instance  }}=tcp:0.0.0.0:{{ $port }}
         ports:
         - name: {{ .instanceShortName | default (.instance | trunc 15) }}
           containerPort: {{ $port }}
@@ -49,4 +49,5 @@ spec:
 {{ $containerSpec | indent 6 }}
       nodeSelector:
 {{ toYaml $nodeSelector | indent 8 }}
+{{- end }}
 {{- end }}

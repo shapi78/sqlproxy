@@ -1,5 +1,5 @@
 
-serviceAccountKey: ""
+serviceAccountKey: "test"
 existingSecret: ""
 existingSecretKey: ""
 port: 3306
@@ -9,11 +9,11 @@ project: "our-spanner-217012"
 instances:
   - instance: "firstdb"
     name: master
-    instanceShortName: ""
+    instanceShortName: "aa"
     replicasCount: 1
   - instance: "second-gen-1545229203428"
     name: replica
-    instanceShortName: ""
+    instanceShortName: "aa"
     replicasCount: 1
 
 image:
