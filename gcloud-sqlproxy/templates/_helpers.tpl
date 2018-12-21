@@ -50,20 +50,11 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 Create the filename for credential
 */}}
 {{- define "credentials-filename" -}}
-{{- if .Values.existingSecret -}}
-    {{- printf "%s" .Values.existingSecretKey -}}
-{{- else -}} {{- printf "credentials.json" -}}
-{{- end }}
+{{ if or .Values.serviceAccountKey .Values.existingSecret -}}
+- -credential_file=/secrets/cloudsql/{{- if .Values.existingSecret -}} {{ .Values.existingSecretKey }} {{- else -}} credentials.json {{- end }}
+{{ end -}}
 {{ end -}}
 
-{{/*
-Check if Secret exists
-*/}}
-{{- define "existSecret" -}}
-{{ if or .Values.serviceAccountKey .Values.existingSecret -}}
-    {{ .Values.existingSecret }}
-{{- end }}
-{{ end -}}
 
 {{/*
 Create the name of the service account to use
@@ -88,7 +79,7 @@ volumeMounts:
 {{ if or .Values.serviceAccountKey .Values.existingSecret -}}
 - name: cloudsql-oauth-credentials
   mountPath: /secrets/cloudsql
-  {{ end -}}
+  {{- end }}
 - name: cloudsql
   mountPath: /cloudsql
 {{- end -}}
@@ -96,7 +87,7 @@ volumeMounts:
 {{- define "rbacSpec" -}}
 {{- if .Values.rbac.create }}
 serviceAccountName: {{ template "gcloud-sqlproxy.fullname" }}
-{{- end }}
+{{- end -}}
 {{- end -}}
 
 {{- define "container.spec" -}}
@@ -104,7 +95,7 @@ volumes:
 {{ if or .Values.serviceAccountKey .Values.existingSecret -}}
 - name: cloudsql-oauth-credentials
   secret:
-    secretName: {{ default (include "gcloud-sqlproxy.fullname" .) .Values.masterReplica.existingSecret }}
+    secretName: {{ default (include "gcloud-sqlproxy.fullname" .) .Values.existingSecret }}
       {{ end -}}
 - name: cloudsql
   emptyDir: {}
@@ -116,4 +107,4 @@ tolerations: {{ toYaml .Values.tolerations -}}
 chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
 release: "{{ .Release.Name }}"
 heritage: "{{ .Release.Service }}"
-{{- end }}
+{{- end -}}

@@ -1,6 +1,5 @@
 {{- $labels := include "lables_yaml" . }}
 {{- $chartName := include "gcloud-sqlproxy.name" . }}
-{{- if ne (index .Values.instances 0).instance "instance" }}
 {{ $port := .Values.port }}
 {{ $project := .Values.project }}
 {{ $region := .Values.region }}
@@ -10,17 +9,18 @@
 {{- $volumeMount := include "volumeMounts" . }}
 {{- $containerSpec := include "container.spec" . }}
 {{- $rbacCreate := include "rbacSpec" . }}
-{{ $nodeSelector := .Values.nodeSelector -}}
+{{ $nodeSelector := .Values.nodeSelector }}
+{{ $CredFile := include "credentials-filename" . }}
 
 {{- range .Values.instances }}
 
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  {{- if eq .name "master" }}
-  name: {{ $chartName }}-{{ $chartName }}
-  {{- else }}
+  {{- if contains "replica" .name }}
   name: {{ $chartName }}-{{ .name }}-{{ $chartName }}
+  {{- else }}
+  name: {{ $chartName }}-{{ $chartName }}
   {{- end }}
   labels:
     app: {{ $chartName }}-{{ .name }}
@@ -32,21 +32,21 @@ spec:
       labels:
         app: {{ $chartName }}-{{ .name }}
     spec:
-{{ $rbacCreate | indent 4 }}
-      nodeSelector:
-{{ toYaml $nodeSelector | indent 8 }}
+{{- $rbacCreate | indent 4 }}
       containers:
       - name: "sqlproxy-{{ .name }}"
 {{ $imageAttributes | indent 8  }}
         command:
         - /cloud_sql_proxy
         - --dir=/cloudsql
-        - -instances= {{ $project }}:{{ $region }}:{{ .instance }}=tcp:0.0.0.0:{{ $port }}
-        - -credential_file=/secrets/cloudsql/{{ template "credentials-filename" }}
+        - -instances={{- with . -}}
+###			{{ $project }}:{{ $region }}:{{ .instance  }}=tcp:0.0.0.0:{{ $port }}
+		     {{- end }}
         ports:
         - name: {{ .instanceShortName | default (.instance | trunc 15) }}
           containerPort: {{ $port }}
 {{ $volumeMount | indent 8 }}
 {{ $containerSpec | indent 6 }}
-{{- end }}
+      nodeSelector:
+{{ toYaml $nodeSelector | indent 8 }}
 {{- end }}

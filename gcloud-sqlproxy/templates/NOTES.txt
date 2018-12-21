@@ -1,5 +1,4 @@
-#### THIS CHART IS DEPRECATED! ####
-
+{{ $port := .Values.port }}
 ** Please be patient while the chart is being deployed **
 
 {{ if not (or .Values.serviceAccountKey .Values.existingSecret) -}}
@@ -29,7 +28,7 @@ settings were not provided.
 
 The SQL server instances can be accessed via ports:
 {{- range .Values.instances }}
-  - {{ .port }} ({{ .instance }})
+  - {{ $port }} ({{ .instance }})
 {{- end }}
 on the following DNS name from within your cluster:
 - {{ template "gcloud-sqlproxy.fullname" . }}.{{ .Release.Namespace }}
