@@ -3,9 +3,7 @@
 {{ $port := .Values.port }}
 {{ $project := .Values.project }}
 {{ $region := .Values.region }}
-{{ $image := printf "%s:%s" .Values.image.repo .Values.image.tag }}
 {{ $imagePullPolicy := .Values.image.pullPolicy }}
-{{- $imageAttributes := include "container.image" . }}
 {{- $volumeMount := include "volumeMounts" . }}
 {{- $oauthCredentials := include "oauth-credentials" . }}
 {{- $rbacCreate := include "rbacSpec" . }}
@@ -37,7 +35,7 @@ spec:
     spec:
 {{- $rbacCreate | indent 4 }}
       containers:
-      - name: "sqlproxy-{{.name}}"
+      - name: "sqlproxy-{{ .name }}"
         image: "{{ $image }}"
         imagePullPolicy: {{ $imagePullPolicy }}
         resources:

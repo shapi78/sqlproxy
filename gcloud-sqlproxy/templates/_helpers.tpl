@@ -67,13 +67,6 @@ Create the name of the service account to use
 {{- end -}}
 {{- end -}}
 
-{{- define "container.image" -}}
-image: "{{ .Values.image.repo }}:{{ .Values.image.tag }}"
-imagePullPolicy: {{ default "" .Values.image.pullPolicy | quote }}
-resources:
-  {{ toYaml .Values.resources }}
-{{- end -}}
-
 {{- define "volumeMounts" -}}
 {{ if or .Values.serviceAccountKey .Values.existingSecret -}}
 - name: cloudsql-oauth-credentials

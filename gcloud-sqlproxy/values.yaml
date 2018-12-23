@@ -9,11 +9,11 @@ project: "our-spanner-217012"
 instances:
   - instance: "firstdb"
     name: master
-    instanceShortName: "aa"
+    instanceShortName: ""
     replicasCount: 1
   - instance: "second-gen-1545229203428"
     name: replica
-    instanceShortName: "ab"
+    instanceShortName: ""
     replicasCount: 1
 
 image:
