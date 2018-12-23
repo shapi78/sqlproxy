@@ -75,13 +75,10 @@ resources:
 {{- end -}}
 
 {{- define "volumeMounts" -}}
-volumeMounts:
 {{ if or .Values.serviceAccountKey .Values.existingSecret -}}
 - name: cloudsql-oauth-credentials
   mountPath: /secrets/cloudsql
   {{- end }}
-- name: cloudsql
-  mountPath: /cloudsql
 {{- end -}}
 
 {{- define "rbacSpec" -}}
@@ -90,18 +87,13 @@ serviceAccountName: {{ template "gcloud-sqlproxy.fullname" }}
 {{- end -}}
 {{- end -}}
 
-{{- define "container.spec" -}}
-volumes:
+{{- define "oauth-credentials" -}}
 {{ if or .Values.serviceAccountKey .Values.existingSecret -}}
 - name: cloudsql-oauth-credentials
   secret:
-    secretName: {{ default (include "gcloud-sqlproxy.fullname" .) .Values.existingSecret }}
+    secretName: {{ default (include "gcloud-sqlproxy.name" .) .Values.existingSecret }}
       {{ end -}}
-- name: cloudsql
-  emptyDir: {}
-affinity: {{ toYaml .Values.affinity -}}
-tolerations: {{ toYaml .Values.tolerations -}}
-{{- end }}
+{{- end -}}
 
 {{- define "lables_yaml" -}}
 chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"

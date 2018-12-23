@@ -1,6 +1,5 @@
 {{- $labels := include "lables_yaml" . }}
 {{- $chartName := include "gcloud-sqlproxy.name" . }}
-{{- if ne (index .Values.instances 0).instance "instance" }}
 {{ $port := .Values.port }}
 {{ $project := .Values.project }}
 {{ $region := .Values.region }}
@@ -8,13 +7,17 @@
 {{ $imagePullPolicy := .Values.image.pullPolicy }}
 {{- $imageAttributes := include "container.image" . }}
 {{- $volumeMount := include "volumeMounts" . }}
-{{- $containerSpec := include "container.spec" . }}
+{{- $oauthCredentials := include "oauth-credentials" . }}
 {{- $rbacCreate := include "rbacSpec" . }}
 {{ $nodeSelector := .Values.nodeSelector }}
+{{ $affinity := .Values.affinity }}
+{{ $tolerations := .Values.tolerations }}
 {{ $CredFile := include "credentials-filename" . }}
+{{ $image := "{{ .Values.image.repo }}:{{ .Values.image.tag }}" }}
+{{ $imagePullPolicy := .Values.image.pullPolicy | quote  }}
+{{ $resources := .Values.resources }}
 
 {{- range .Values.instances }}
-
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -24,30 +27,41 @@ metadata:
   name: {{ $chartName }}-{{ $chartName }}
   {{- end }}
   labels:
-    app: {{ $chartName }}-{{ .name }}
-{{ $labels | indent 4 }}
+    app: "{{ $chartName }}-{{ .name }}"
 spec:
   replicas: {{ .replicasCount }}
   template:
     metadata:
       labels:
-        app: {{ $chartName }}-{{ .name }}
+        app: "{{ $chartName }}-{{ .name }}"
     spec:
 {{- $rbacCreate | indent 4 }}
       containers:
-      - name: "sqlproxy-{{ .name }}"
-{{ $imageAttributes | indent 8  }}
+      - name: "sqlproxy-{{.name}}"
+        image: "{{ $image }}"
+        imagePullPolicy: {{ $imagePullPolicy }}
+        resources:
+{{ toYaml $resources | indent 10 }}
         command:
         - /cloud_sql_proxy
         - --dir=/cloudsql
 {{  $CredFile | indent 8 -}}
-        - -instances={{ $project }}:{{ $region }}:{{ .instance  }}=tcp:0.0.0.0:{{ $port }}
+        - -instances= {{ $project }}:{{ $region }}:{{ .instance }}=tcp:0.0.0.0:{{ $port }}
         ports:
         - name: {{ .instanceShortName | default (.instance | trunc 15) }}
           containerPort: {{ $port }}
+        volumeMounts:
 {{ $volumeMount | indent 8 }}
-{{ $containerSpec | indent 6 }}
+        - name: cloudsql
+          mountPath: /cloudsql
+      volumes:
+{{  $oauthCredentials | indent 6 }}
+      - name: cloudsql
+        emptyDir: {}
       nodeSelector:
 {{ toYaml $nodeSelector | indent 8 }}
-{{- end }}
+      affinity:
+{{ toYaml $affinity | indent 8 }}
+      tolerations:
+{{ toYaml $tolerations | indent 8 }}
 {{- end }}

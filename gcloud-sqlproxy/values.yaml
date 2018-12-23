@@ -1,4 +1,4 @@
-
+---
 serviceAccountKey: "test"
 existingSecret: ""
 existingSecretKey: ""
@@ -13,14 +13,13 @@ instances:
     replicasCount: 1
   - instance: "second-gen-1545229203428"
     name: replica
-    instanceShortName: "aa"
+    instanceShortName: "ab"
     replicasCount: 1
 
 image:
   repo: b.gcr.io/cloudsql-docker/gce-proxy
   tag: "1.11"
   pullPolicy: Always
-
 
 rbac:
   create: false
@@ -37,7 +36,7 @@ resources:
     cpu: 150m
 
 ## Node selector
-nodeSelector: 
+nodeSelector:
   cluster: primary
 ## app: back
 
@@ -49,4 +48,3 @@ affinity: {}
 
 podDisruptionBudget: |
   maxUnavailable: 1
-
