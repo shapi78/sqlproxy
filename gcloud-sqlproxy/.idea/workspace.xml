@@ -65,7 +65,7 @@
         <entry file="file://$PROJECT_DIR$/templates/deployment.yaml">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="690">
-              <caret line="66" selection-start-line="66" selection-end-line="66" />
+              <caret line="65" selection-start-line="65" selection-end-line="65" />
             </state>
           </provider>
         </entry>
@@ -326,7 +326,7 @@
     <entry file="file://$PROJECT_DIR$/templates/deployment.yaml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="690">
-          <caret line="66" selection-start-line="66" selection-end-line="66" />
+          <caret line="65" selection-start-line="65" selection-end-line="65" />
         </state>
       </provider>
     </entry>
