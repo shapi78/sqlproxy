@@ -1,18 +1,20 @@
 {{ $port := .Values.port }}
-{{- $chartName := include "gcloud-sqlproxy.name" . }}
+{{- $chartName := include "sqlproxy.chart.name" . }}
+{{- $releaseName := include "sqlproxy.release.name" . }}
 {{- $labels := include "lables_yaml" . }}
 {{- range .Values.instances }}
 {{- $name :=default .name .instance | trunc 10 | trimSuffix "-" }}
+---
 apiVersion: v1
 kind: Service
 metadata:
   {{- if contains "replica" .instance }}
-  name: {{ $chartName }}-{{ $name }}-{{ $chartName }}
+  name: {{ $chartName }}-replica-{{ $releaseName }}
   {{- else }}
-  name: {{ $chartName }}-{{ $chartName }}
+  name: {{ $chartName }}-{{ $releaseName }}
   {{- end }}
   labels:
-    app: {{ $chartName }}-{{ $name }}
+    app: {{ $chartName }}-{{ .instance }}
 {{ $labels | indent 4 }}
 spec:
   ports:

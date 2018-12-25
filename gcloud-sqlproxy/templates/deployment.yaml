@@ -1,5 +1,6 @@
 {{- $labels := include "lables_yaml" . }}
-{{- $chartName := include "gcloud-sqlproxy.name" . }}
+{{- $chartName := include "sqlproxy.chart.name" . }}
+{{- $releaseName := include "sqlproxy.release.name" . }}
 {{ $port := .Values.port }}
 {{ $project := .Values.project }}
 {{ $region := .Values.region }}
@@ -17,22 +18,24 @@
 
 {{- range .Values.instances }}
 {{- $name :=default .name .instance | trunc 10 | trimSuffix "-" }}
+---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   {{- if contains "replica" .instance }}
-  name: {{ $chartName }}-replica-{{ $name }}-{{ $chartName }}
+  name: {{ $chartName }}-replica-{{ $releaseName }}
   {{- else }}
-  name: {{ $chartName }}-{{ $chartName }}
+  name: {{ $chartName }}-{{ $releaseName }}
   {{- end }}
   labels:
-    app: "{{ $chartName }}-{{ $name }}"
+    app: {{ $chartName }}-{{ .instance }}
+{{ $labels | indent 4 }}
 spec:
   replicas: {{ .replicasCount }}
   template:
     metadata:
       labels:
-        app: "{{ $chartName }}-{{ $name }}"
+        app: {{ $chartName }}-{{ .instance }}
     spec:
 {{- $rbacCreate | indent 4 }}
       containers:

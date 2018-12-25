@@ -1,16 +1,26 @@
+{{ $PDB := .Values.podDisruptionBudget }}
+{{- $labels := include "lables_yaml" . }}
+{{- $chartName := include "sqlproxy.chart.name" . }}
+{{- $releaseName := include "sqlproxy.release.name" . }}
 {{- if .Values.podDisruptionBudget -}}
+{{- range .Values.instances }}
+{{- $name :=default .name .instance | trunc 20 | trimSuffix "-" }}
+---
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 metadata:
   labels:
-    app: {{ template "gcloud-sqlproxy.name" . }}
-    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-    heritage: {{ .Release.Service }}
-    release: {{ .Release.Name }}
-  name: {{ template "gcloud-sqlproxy.fullname" . }}
+{{ $labels | indent 4 }}
+    app: {{ $chartName }}-{{ $name }}
+  {{- if contains "replica" .instance }}
+  name: {{ $chartName }}-replica-{{ $releaseName }}
+  {{- else }}
+  name: {{ $chartName }}-{{ $releaseName }}
+  {{- end }}
 spec:
   selector:
     matchLabels:
-      app: {{ template "gcloud-sqlproxy.name" . }}
-{{ .Values.podDisruptionBudget | indent 2 }}
+      app: {{ $chartName }}-{{ .instance }}
+{{ $PDB | indent 2 }}
 {{- end -}}
+{{- end }}
