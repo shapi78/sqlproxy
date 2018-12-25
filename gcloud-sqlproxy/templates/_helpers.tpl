@@ -43,6 +43,14 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- end -}}
 
 {{/*
+Image name generation
+*/}}
+{{- define "image-tag" -}}
+{{- printf "%s:%s" .Values.image.repo .Values.image.tag -}}
+{{ end -}}
+
+
+{{/*
 Create the filename for credential
 */}}
 {{- define "credentials-filename" -}}

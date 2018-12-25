@@ -12,7 +12,7 @@
 {{ $affinity := .Values.affinity }}
 {{ $tolerations := .Values.tolerations }}
 {{ $CredFile := include "credentials-filename" . }}
-{{ $image := "{{ .Values.image.repo }}:{{ .Values.image.tag }}" }}
+{{ $image := include "image-tag" . }}
 {{ $imagePullPolicy := .Values.image.pullPolicy | quote  }}
 {{ $resources := .Values.resources }}
 
