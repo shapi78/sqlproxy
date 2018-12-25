@@ -1,5 +1,5 @@
 ---
-serviceAccountKey: "test"
+serviceAccountKey: ""
 existingSecret: ""
 existingSecretKey: ""
 port: 3306

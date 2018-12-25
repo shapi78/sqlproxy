@@ -3,7 +3,7 @@
 {{- $releaseName := include "sqlproxy.release.name" . }}
 {{- $labels := include "lables_yaml" . }}
 {{- range .Values.instances }}
-{{- $name :=default .name .instance | trunc 10 | trimSuffix "-" }}
+{{- $name := default .instance | trunc 10 | trimSuffix "-" }}
 ---
 apiVersion: v1
 kind: Service
