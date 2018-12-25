@@ -10,11 +10,13 @@ kind: Service
 metadata:
   {{- if contains "replica" .instance }}
   name: {{ $chartName }}-replica-{{ $releaseName }}
+  labels:
+    app: {{ $chartName }}-replica-{{ $releaseName }}
   {{- else }}
   name: {{ $chartName }}-{{ $releaseName }}
-  {{- end }}
   labels:
-    app: {{ $chartName }}-{{ .instance }}
+    app: {{ $chartName }}-{{ $releaseName }}
+  {{- end }}
 {{ $labels | indent 4 }}
 spec:
   ports:
@@ -23,5 +25,9 @@ spec:
     port: {{ $port }}
     targetPort: {{ .instanceShortName | default $name }}
   selector:
-    app: {{ $chartName }}-{{ $name }}
+  {{- if contains "replica" .instance }}
+    app: {{ $chartName }}-replica-{{ $releaseName }}
+  {{- else }}
+    app: {{ $chartName }}-{{ $releaseName }}
+  {{- end }}
 {{- end }}
